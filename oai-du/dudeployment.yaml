@@ -1,0 +1,23 @@
+apiVersion: workload.nephio.org/v1alpha1
+kind: NFDeployment
+metadata: # kpt-merge: oai-ran-du/du-ran
+  name: du-ran
+  namespace: oai-ran-du
+  annotations:
+    argocd.argoproj.io/sync-wave: '2'
+    internal.kpt.dev/upstream-identifier: workload.nephio.org|NFDeployment|oai-ran-du|du-ran
+spec:
+  provider: du.openairinterface.org
+  interfaces:
+  - name: f1
+    ipv4:
+      address: 10.0.3.18/24
+      gateway: 10.0.3.1
+    vlanID: 32
+  parametersRefs:
+  - apiVersion: workload.nephio.org/v1alpha1
+    kind: NFConfig
+    name: oai-du-config
+  - apiVersion: ref.nephio.org/v1alpha1
+    kind: Config
+    name: oai-cucp-config
