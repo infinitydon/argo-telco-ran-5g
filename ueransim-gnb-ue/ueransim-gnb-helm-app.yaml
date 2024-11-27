@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: # kpt-merge: argocd/ueransim-gnb-ue
+  name: ueransim-gnb-ue
+  namespace: argocd
+  annotations:
+    internal.kpt.dev/upstream-identifier: 'argoproj.io|Application|argocd|ueransim-gnb-ue'
+spec:
+  project: default
+  source:
+    chart: free5gc-ueransim
+    repoURL: ghcr.io/infinitydon
+    targetRevision: 0.0.1 # kpt-set: ${helm-chart-version}
+    helm:
+      releaseName: ran-gnb-ue # kpt-set: ${helm-release-name}
+      valuesObject:
+        dnn: internet # kpt-set: ${dnn}
+        plmn:
+          mcc: 208 # kpt-set: ${plmn-mcc}
+          mnc: 93 # kpt-set: ${plmn-mnc}
+          tac: 000001 # kpt-set: ${plmn-tac}
+        slicing:
+          sst: 1 # kpt-set: ${slice-sst}
+          sd: 112233 # kpt-set: ${slice-sd}
+        ue:
+          n1:
+            multusIP: 10.0.5.17 # kpt-set: ${ue-multus-n1-ip}
+            multusNetworkMask: 24 # kpt-set: ${ue-n1-netmask}
+        gnb:
+          amfPort: 38412 # kpt-set: ${amf-port}
+          n2:
+            multusIP: 10.0.5.16 # kpt-set: ${gnb-multus-n2-ip}
+            multusNetworkMask: 24 # kpt-set: ${gnb-n2-netmask}
+            routeGw: 10.0.5.1 # kpt-set: ${gnb-n2-route-gw}
+          n3:
+            multusIP: 10.0.6.16 # kpt-set: ${gnb-multus-n3-ip}
+            multusNetworkMask: 24 # kpt-set: ${gnb-n3-netmask}
+            routeGw: 10.0.6.1 # kpt-set: ${gnb-n3-route-gw}
+        upf:
+          N3subnetCIDR: 10.2.3.0/24 # kpt-set: ${upf-n3-subnet-cidr}
+        amf:
+          N2multusIP: 10.1.3.16 # kpt-set: ${amf-n2-multus-ip}
+          N2subnetCIDR: 10.1.3.0/24 # kpt-set: ${amf-n2-subnet-cidr}
+        multus:
+          n2dev: ens8 # kpt-set: ${multus-n2-dev}
+          n3dev: ens9 # kpt-set: ${multus-n3-dev}
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: telco
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true
+    syncOptions:
+    - CreateNamespace=true
+    - Replace=true
+    - ServerSideApply=true,Validate=false

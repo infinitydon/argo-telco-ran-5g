@@ -1,0 +1,49 @@
+apiVersion: kpt.dev/v1
+kind: Kptfile
+metadata: # kpt-merge: /ueransim-gnb-ue
+  name: ueransim-gnb-ue
+  annotations:
+    config.kubernetes.io/local-config: "true"
+    internal.kpt.dev/upstream-identifier: 'kpt.dev|Kptfile|default|ueransim-gnb-ue'
+upstream:
+  type: git
+  git:
+    repo: https://github.com/infinitydon/nephio-aws-packages.git
+    directory: free5gc-ueransim-package
+    ref: r3-argocd
+upstreamLock:
+  type: git
+  git:
+    repo: https://github.com/infinitydon/nephio-aws-packages.git
+    directory: free5gc-ueransim-package
+    ref: r3-argocd
+    commit: e9903e8a05f2c7c057ddb09d678646ef4703f400
+info:
+  description: this package is used to create the EKS terraform FLuxcD GitRepo Resource
+pipeline:
+  mutators:
+  - name: PackageVariant.free5gc-ueransim..0
+    image: gcr.io/kpt-fn/apply-setters:v0.2.0
+    configMap:
+      amf-n2-multus-ip: 10.1.3.16
+      amf-n2-subnet-cidr: 10.1.3.0/24
+      amf-port: "38412"
+      dnn: internet
+      gnb-multus-n2-ip: 10.0.5.16
+      gnb-multus-n3-ip: 10.0.6.16
+      gnb-n2-netmask: "24"
+      gnb-n2-route-gw: 10.0.5.1
+      gnb-n3-netmask: "24"
+      gnb-n3-route-gw: 10.0.6.1
+      helm-chart-version: 0.0.1
+      helm-release-name: ran-gnb-ue
+      multus-n2-dev: ens8
+      multus-n3-dev: ens9
+      plmn-mcc: "208"
+      plmn-mnc: "93"
+      plmn-tac: "000001"
+      slice-sd: "112233"
+      slice-sst: "1"
+      ue-multus-n1-ip: 10.0.5.17
+      ue-n1-netmask: "24"
+      upf-n3-subnet-cidr: 10.2.3.0/24
